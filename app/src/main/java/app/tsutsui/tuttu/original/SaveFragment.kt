@@ -11,6 +11,7 @@ import java.lang.ClassCastException
 
 class SaveFragment:DialogFragment() {
     interface SaveFragmentListener{
+        
         fun onDialogPositiveClick(dialog:DialogFragment)
         fun onDialogNegativeClick(dialog: DialogFragment)
         fun onDataPass(name:String)
