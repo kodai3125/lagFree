@@ -1,0 +1,3 @@
+[submodule "android-timeline-schedule-view"]
+	path = android-timeline-schedule-view
+	url = https://github.com/valjapan/android-timeline-schedule-view.git
