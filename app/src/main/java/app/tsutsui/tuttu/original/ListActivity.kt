@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.tsutsui.tuttu.lagfree.MainActivity
 import app.tsutsui.tuttu.lagfree.R
 import app.tsutsui.tuttu.lagfree.ScheduleActivity
+import app.tsutsui.tuttu.lagfree.StartActivity
 import io.realm.Realm
 import io.realm.RealmResults
 import io.realm.Sort
@@ -24,6 +25,7 @@ class ListActivity : AppCompatActivity(),checkFragment.checkFragmentListener {
     }
 
     var id:String=""
+    var indicator=0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,16 @@ class ListActivity : AppCompatActivity(),checkFragment.checkFragmentListener {
 
         val list=readAll()
 
+        indicator=intent.getIntExtra("indicator",0)
+
         val textView=findViewById<TextView>(R.id.textView9)
+        val button11=findViewById<Button>(R.id.button11)
+
+        button11.setOnClickListener{
+            val intent=Intent(this, StartActivity::class.java)
+            startActivity(intent)
+        }
+
 
         if (list.isEmpty()){
             textView.text="保存されたフライトはありません"
@@ -73,7 +84,25 @@ class ListActivity : AppCompatActivity(),checkFragment.checkFragmentListener {
 
         title = "フライト一覧"
 
+        if (indicator==1){
+            Toast.makeText(this,"フライトが保存されました",Toast.LENGTH_SHORT).show()
+        }
+        else if (indicator==2){
+            Toast.makeText(this,"フライトが上書き保存されました",Toast.LENGTH_SHORT).show()
+        }
 
+
+    }
+
+    override fun onDataPass(data: String) {
+        delete(data)
+
+        val realm=Realm.getDefaultInstance()
+        val list=realm.where(DataEvent::class.java).equalTo("id",data).findFirst()!!.title
+        Toast.makeText(this,"$list　は削除されました",Toast.LENGTH_SHORT).show()
+        realm.close()
+        val intent=Intent(this,ListActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onDialogPositiveClick(dialog: DialogFragment) {
@@ -86,26 +115,13 @@ class ListActivity : AppCompatActivity(),checkFragment.checkFragmentListener {
     }
 
     override fun onDialogPositiveClick2(dialog: DialogFragment) {
-        delete(id)
 
-        check()
-    }
 
-    fun check(){
-        val textView=findViewById<TextView>(R.id.textView9)
-        val list=readAll()
-        if (list.isEmpty()){
-            textView.text="保存されたフライトはありません"
-        }
     }
 
 
     override fun onDialogNegativeClick2(dialog: DialogFragment) {
 
-    }
-
-    override fun onDataPass(data: String) {
-        id=data
     }
 
     fun readAll():RealmResults<DataEvent>{

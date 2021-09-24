@@ -153,24 +153,61 @@ class MainActivity : AppCompatActivity(),DatePickerDialog.OnDateSetListener,Time
             else{
                 val intent = Intent(this, ScheduleActivity::class.java)
 
-                intent.putExtra("year",years)
-                intent.putExtra("month",month)
-                intent.putExtra("day",day)
-                intent.putExtra("hour",hour)
-                intent.putExtra("min",min)
+                if (years==0&&month==0&&day==0&&hour==0&&min==0){
+                    val list=DepartureTime.text.split("/")
+                    intent.putExtra("year",list[0])
+                    intent.putExtra("month",list[1])
+                    intent.putExtra("day",list[2])
+                    intent.putExtra("hour",list[3])
+                    intent.putExtra("min",list[4])
+                }
 
-                intent.putExtra("hour2",hour2)
-                intent.putExtra("min2",min2)
+                else if(hour2==0&&min2==0){
+                    val list=FlightTime.text.split(":")
+                    intent.putExtra("hour2",list[0])
+                    intent.putExtra("min2",list[1])
+                }
 
-                intent.putExtra("country1",a)
-                intent.putExtra("country2",b)
+                else if (a==""&&b==""){
 
-                intent.putExtra("timelag",zisa)
+                    intent.putExtra("country1",spinner.selectedItem.toString())
+                    intent.putExtra("country2",spinner2.selectedItem.toString())
+                }
+                else if(zisa==0){
+                    printTime()
+                    intent.putExtra("timelag",zisa)
+                }
+                else if (sleepTimeHours==0&&sleepTimeMin==0){
+                    val list=Sleep.text.split(":")
+                    intent.putExtra("sleepTimeH",list[0])
+                    intent.putExtra("sleepTimeM",list[1])
+                }
+                else if (sleepHoursH==0&&sleepHoursM==0){
+                    val list=SleepH.text.split(":")
+                    intent.putExtra("sleepH",list[0])
+                    intent.putExtra("sleepM",list[1])
+                }
+                else{
+                    intent.putExtra("year",years)
+                    intent.putExtra("month",month)
+                    intent.putExtra("day",day)
+                    intent.putExtra("hour",hour)
+                    intent.putExtra("min",min)
 
-                intent.putExtra("sleepTimeH",sleepTimeHours)
-                intent.putExtra("sleepTimeM",sleepTimeMin)
-                intent.putExtra("sleepH",sleepHoursH)
-                intent.putExtra("sleepM",sleepHoursM)
+                    intent.putExtra("hour2",hour2)
+                    intent.putExtra("min2",min2)
+
+                    intent.putExtra("country1",a)
+                    intent.putExtra("country2",b)
+
+                    intent.putExtra("timelag",zisa)
+
+                    intent.putExtra("sleepTimeH",sleepTimeHours)
+                    intent.putExtra("sleepTimeM",sleepTimeMin)
+
+                    intent.putExtra("sleepH",sleepHoursH)
+                    intent.putExtra("sleepM",sleepHoursM)
+                }
 
                 startActivity(intent)
 
@@ -205,7 +242,7 @@ class MainActivity : AppCompatActivity(),DatePickerDialog.OnDateSetListener,Time
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        val str1=String.format(Locale.US,"%d/%d/%d",year,monthOfYear+1,dayOfMonth)
+        val str1=String.format(Locale.US,"%d/%d/%d/",year,monthOfYear+1,dayOfMonth)
         years=year
         month=monthOfYear
         day=dayOfMonth
@@ -219,7 +256,7 @@ class MainActivity : AppCompatActivity(),DatePickerDialog.OnDateSetListener,Time
         val str = String.format(Locale.US, "%d:%d", hourOfDay, minute)
 
         if (x==1){
-            DepartureTime.setText(DepartureTime.text.toString()+" "+str)
+            DepartureTime.setText(DepartureTime.text.toString()+str)
             hour=hourOfDay
             min=minute
         }

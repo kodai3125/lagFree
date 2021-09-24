@@ -463,6 +463,7 @@ import kotlin.collections.ArrayList
             }
 
             val intent=Intent(this,ListActivity::class.java)
+            intent.putExtra("indicator",1)
             startActivity(intent)
         }
         else if (valid1==2){
@@ -512,6 +513,7 @@ import kotlin.collections.ArrayList
             }
 
             val intent=Intent(this,ListActivity::class.java)
+            intent.putExtra("indicator",2)
             startActivity(intent)
 
         }

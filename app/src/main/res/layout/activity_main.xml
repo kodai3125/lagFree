@@ -68,12 +68,12 @@
         android:id="@+id/DepartureTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
         android:layout_marginTop="280dp"
         android:ems="10"
         android:focusable="false"
         android:hint="出発時間"
         android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -81,12 +81,12 @@
         android:id="@+id/FlightTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
         android:layout_marginTop="45dp"
         android:ems="10"
         android:focusable="false"
         android:hint="フライト時間"
         android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/DepartureTime" />
 
@@ -94,12 +94,12 @@
         android:id="@+id/editTextSleep"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
         android:layout_marginTop="45dp"
         android:ems="10"
         android:focusable="false"
         android:hint="普段の就寝時刻"
         android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/FlightTime" />
 
@@ -107,12 +107,12 @@
         android:id="@+id/editTextSleepHours"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
         android:layout_marginTop="45dp"
         android:ems="10"
         android:focusable="false"
         android:hint="普段の睡眠時間"
         android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextSleep" />
 
@@ -137,5 +137,45 @@
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toEndOf="@+id/spinner2"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="出発時間"
+        app:layout_constraintBottom_toBottomOf="@+id/DepartureTime"
+        app:layout_constraintStart_toEndOf="@+id/DepartureTime"
+        app:layout_constraintTop_toTopOf="@+id/DepartureTime" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="フライト時間"
+        app:layout_constraintBottom_toBottomOf="@+id/FlightTime"
+        app:layout_constraintStart_toEndOf="@+id/FlightTime"
+        app:layout_constraintTop_toTopOf="@+id/FlightTime" />
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="普段の就寝時刻"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextSleep"
+        app:layout_constraintStart_toEndOf="@+id/editTextSleep"
+        app:layout_constraintTop_toTopOf="@+id/editTextSleep" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="普段の睡眠時間"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextSleepHours"
+        app:layout_constraintStart_toEndOf="@+id/editTextSleepHours"
+        app:layout_constraintTop_toTopOf="@+id/editTextSleepHours" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
