@@ -16,6 +16,7 @@ class EventPicker:DialogFragment(){
         fun onDialogPositiveClick(dialog: DialogFragment)
         fun onDialogNegativeClick(dialog: DialogFragment)
         fun onDataPass(data:String,data2:Int,data3:Int,data4:Int,data5:Int,data8:String)
+        fun onDissmissListener(dialog: DialogFragment)
     }
 
     var mLister:EventDialogLister?=null
@@ -139,6 +140,10 @@ class EventPicker:DialogFragment(){
                 mLister?.onDialogNegativeClick(this)
 
             }
+            .setOnDismissListener {
+                mLister?.onDissmissListener(this)
+            }
+
 
 
         return builder.create()

@@ -12,29 +12,28 @@ import androidx.recyclerview.widget.RecyclerView
 import app.tsutsui.tuttu.lagfree.R
 import io.realm.OrderedRealmCollection
 import io.realm.RealmRecyclerViewAdapter
-import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.*
 
 class CustomAdapter (
     private  val context: Context,
-    private  var list: OrderedRealmCollection<EventData>?,
+    private  var list: OrderedRealmCollection<DataEvent>?,
     private var listener:OnItemClickListener,
     private var listener2:DeleteListener,
     private val autoUpdate:Boolean
 ):
-    RealmRecyclerViewAdapter<EventData, CustomAdapter.EventViewHolder>(list,autoUpdate){
+    RealmRecyclerViewAdapter<DataEvent, CustomAdapter.EventViewHolder>(list,autoUpdate){
 
     override fun getItemCount(): Int =list?.size?:0
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
-        val event:EventData=list?.get(position)?:return
+        val event:DataEvent=list?.get(position)?:return
 
         holder.container.setOnClickListener{
             listener.onItemClick(event)
         }
         holder.imageView.setImageResource(event.imageId)
-        holder.contentTextView.text=event.content
+        holder.contentTextView.text=event.title
         holder.dateTextView.text= SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPANESE).format(event.createdAt)
         holder.button.setOnClickListener{
             listener2.buttonTapped(event)
@@ -56,10 +55,10 @@ class CustomAdapter (
     }
 
     interface OnItemClickListener{
-        fun onItemClick(item:EventData)
+        fun onItemClick(item:DataEvent)
     }
 
     interface DeleteListener{
-        fun buttonTapped(item:EventData)
+        fun buttonTapped(item:DataEvent)
     }
 }

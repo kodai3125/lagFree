@@ -23,6 +23,7 @@ class FragmentEvent:DialogFragment() {
 
         fun onClickButton()
         fun onClickButton2()
+        fun onDissMiss(dialog:DialogFragment)
     }
 
     var mListr:FragmentEventLister?=null
@@ -67,7 +68,9 @@ class FragmentEvent:DialogFragment() {
         }
 
 
-        builder.setView(view)
+        builder.setView(view).setOnDismissListener {
+            mListr?.onDissMiss(this)
+        }
 
         return builder.create()
     }

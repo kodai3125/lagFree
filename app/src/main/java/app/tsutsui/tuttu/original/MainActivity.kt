@@ -40,6 +40,8 @@ class MainActivity : AppCompatActivity(),DatePickerDialog.OnDateSetListener,Time
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        
+        title="設定"
 
         DepartureTime=findViewById(R.id.DepartureTime)
         FlightTime=findViewById(R.id.FlightTime)

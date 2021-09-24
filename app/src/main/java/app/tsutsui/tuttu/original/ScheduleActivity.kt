@@ -2,28 +2,27 @@
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
+import app.tsutsui.tuttu.original.DataEvent
+import app.tsutsui.tuttu.original.ListActivity
+import app.tsutsui.tuttu.original.SaveFragment
 import com.roundtableapps.timelinedayviewlibrary.Event
 import com.roundtableapps.timelinedayviewlibrary.EventView
 import com.roundtableapps.timelinedayviewlibrary.TimeLineLayout
+import io.realm.Realm
+import io.realm.RealmList
 import org.json.JSONArray
-import org.w3c.dom.Text
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.abs
-import kotlin.reflect.KMutableProperty
 
-class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,FragmentEvent.FragmentEventLister{
+    class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,FragmentEvent.FragmentEventLister,SaveFragment.SaveFragmentListener{
 
     var event=""
     var eventStart=0F
@@ -32,6 +31,7 @@ class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,Fra
     var eventFinM=0F
 
     var choice=0
+    var valid1=0
 
     var list= arrayListOf<ArrayList<String>>()
 
@@ -41,10 +41,19 @@ class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,Fra
     var endTimeListM= arrayListOf<String>()
     var eventNameList= arrayListOf<String>()
 
+    var title=""
+
+
+    private val realm: Realm by lazy {
+        Realm.getDefaultInstance()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule)
+
+
 
         val country1 = intent.getStringExtra("country1")
         val country2 = intent.getStringExtra("country2")
@@ -65,8 +74,13 @@ class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,Fra
         val sleepH=intent.getIntExtra("sleepH",0)
         val sleepM=intent.getIntExtra("sleepM",0)
 
+        val id=intent.getStringExtra("id")
+        val tag=intent.getIntExtra("tag",0)
+
         val button2=findViewById<Button>(R.id.button2)
         val button3=findViewById<Button>(R.id.button3)
+        val button5=findViewById<Button>(R.id.button5)
+        val button10=findViewById<Button>(R.id.button10)
 
 
         val calendar = GregorianCalendar.getInstance()
@@ -79,15 +93,55 @@ class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,Fra
         calendar2.add(GregorianCalendar.HOUR_OF_DAY, hour2)
         calendar2.add(GregorianCalendar.MINUTE, min2)
 
+        button10.setOnClickListener{
+            removeList("from")
+            removeList("fromM")
+            removeList("to")
+            removeList("toM")
+            removeList("name")
+            removeList("list2")
+            removeList("id")
+            removeList("title")
+            val intent=Intent(this,ListActivity::class.java)
+            startActivity(intent)
+        }
+
         button2.setOnClickListener {
+
+            removeList("from")
+            removeList("fromM")
+            removeList("to")
+            removeList("toM")
+            removeList("name")
+            removeList("list2")
+            removeList("id")
+            removeList("title")
+
             val intent = Intent(this, StartActivity::class.java)
             startActivity(intent)
         }
 
         button3.setOnClickListener {
 
-            var newFragment = EventPicker()
+            val newFragment = EventPicker()
             newFragment.show(supportFragmentManager,"eventPicker")
+
+        }
+
+        button5.setOnClickListener{
+            val id2=loadArrayList2("id")
+
+            if (id2.isEmpty()){
+                val newFragment=SaveFragment()
+                newFragment.show(supportFragmentManager,"saveFragment")
+            }
+            else if (loadArrayList2("title").isNotEmpty()){
+                val newFragment=SaveFragment()
+                val buldle=Bundle()
+                buldle.putString("TITLE",loadArrayList2("title")[0])
+                newFragment.arguments=buldle
+                newFragment.show(supportFragmentManager,"saveFragment")
+            }
 
         }
 
@@ -176,18 +230,46 @@ class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,Fra
         if (sleepSchedule==0F && timelag==0){
 
             if (loadArrayList2("from").isNotEmpty()){
+
+                if (loadArrayList2("id").isEmpty()){
+                    setTitle("名称未設定")
+                }
+                else{
+                    setTitle(loadArrayList2("title")[0])
+                }
+
                 for (i in 0 until loadArrayList2("from").size){
 
                     addEvent(loadArrayList2("from")[i],loadArrayList2("fromM")[i],loadArrayList2("to")[i],loadArrayList2("toM")[i],loadArrayList2("name")[i])
 
                 }
             }
-            else{
+            else if (tag==1){
+                removeList("from")
+
+                val realm=Realm.getDefaultInstance()
+
+                val readList=realm.where(DataEvent::class.java).equalTo("id",id)
+
+                val data=readList.findFirst()?.events
+
+                for (i in 0 until (data!!.size/5)){
+                    addEvent(data[5*i]!!.toString(),data[1+5*i]!!.toString(),data[2+5*i]!!.toString(),data[3+5*i]!!.toString(),data[4+5*i]!!.toString())
+                }
+
+                saveList2("title", arrayListOf(readList.findFirst()!!.title))
+                saveList2("id", arrayListOf(id))
+
+                setTitle(readList.findFirst()!!.title)
+
+                realm.close()
 
             }
 
         }
         else{
+
+            setTitle("名称未設定")
 
             if (startTimeList.isEmpty()){
 
@@ -205,7 +287,11 @@ class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,Fra
 
             }
 
+
+
         }
+
+
 
     }
 
@@ -272,6 +358,14 @@ class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,Fra
 
     }
 
+    override fun onDissmissListener(dialog: DialogFragment) {
+        removeList("list2")
+    }
+
+    override fun onDissMiss(dialog: DialogFragment) {
+
+    }
+
     override fun onClickButton() {
 
         val bundle=Bundle()
@@ -331,6 +425,106 @@ class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,Fra
     override fun onDialogNegativeClick(dialog: DialogFragment) {
 
     }
+
+    override fun onDataPass2(name: String,valid:Int) {
+        title=name
+        valid1=valid
+    }
+
+    override fun onDialogPositiveClick2(dialog: DialogFragment) {
+
+        if (valid1!=2){
+            realm.executeTransaction {
+                val event=it.createObject(DataEvent::class.java,UUID.randomUUID().toString())
+                event.imageId=R.drawable.icon_test
+                val tempList=RealmList<String>()
+                for(i in 0 until list.size){
+                    tempList.add(startTimeList[i])
+                    tempList.add(startTineListM[i])
+                    tempList.add(endTimeList[i])
+                    tempList.add(endTimeListM[i])
+                    tempList.add(eventNameList[i])
+                }
+                event.events=tempList
+                event.title=title
+            }
+            realm.close()
+
+            removeList("from")
+            removeList("fromM")
+            removeList("to")
+            removeList("toM")
+            removeList("name")
+            removeList("id")
+            removeList("title")
+
+            if (loadArrayList2("list2").isNotEmpty()){
+                removeList("list2")
+            }
+
+            val intent=Intent(this,ListActivity::class.java)
+            startActivity(intent)
+        }
+        else if (valid1==2){
+            Toast.makeText(this,"名前を入力してください",Toast.LENGTH_LONG).show()
+        }
+
+
+    }
+
+    override fun onDialogNegativeClick2(dialog: DialogFragment) {
+
+    }
+
+    override fun onDialogPositiveClick3(dialog: DialogFragment) {
+
+        if (valid1!=2){
+            val id=loadArrayList2("id")
+
+            Realm.getDefaultInstance().use{realm->
+                realm.executeTransaction {
+                    val readList=realm.where(DataEvent::class.java).equalTo("id",id[0]).findFirst()
+                    readList?.title=title
+                    val tempList=RealmList<String>()
+                    for(i in 0 until list.size){
+                        tempList.add(startTimeList[i])
+                        tempList.add(startTineListM[i])
+                        tempList.add(endTimeList[i])
+                        tempList.add(endTimeListM[i])
+                        tempList.add(eventNameList[i])
+                    }
+                    readList?.events=tempList
+
+                }
+                realm.close()
+            }
+
+            removeList("from")
+            removeList("fromM")
+            removeList("to")
+            removeList("toM")
+            removeList("name")
+            removeList("id")
+            removeList("title")
+
+            if (loadArrayList2("list2").isNotEmpty()){
+                removeList("list2")
+            }
+
+            val intent=Intent(this,ListActivity::class.java)
+            startActivity(intent)
+
+        }
+        else if (valid1==2){
+            Toast.makeText(this,"名前を入力してください",Toast.LENGTH_LONG).show()
+        }
+
+    }
+
+    override fun onDialogNegativeClick3(dialog: DialogFragment) {
+
+    }
+
 
     private fun addEvent(fromTime:String, fromTimeM:String,toTime:String,toTimeM:String, eventName:String){
 
@@ -424,6 +618,13 @@ class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,Fra
         editor.apply {
             remove(key)
         }
+        editor.apply()
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        realm.close()
 
     }
 }
