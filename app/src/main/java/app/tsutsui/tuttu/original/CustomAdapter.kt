@@ -26,6 +26,8 @@ class CustomAdapter (
 
     override fun getItemCount(): Int =list?.size?:0
 
+    fun getItem():OrderedRealmCollection<DataEvent>?=list
+
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
         val event:DataEvent=list?.get(position)?:return
 
@@ -36,7 +38,7 @@ class CustomAdapter (
         holder.contentTextView.text=event.title
         holder.dateTextView.text= SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPANESE).format(event.createdAt)
         holder.button.setOnClickListener{
-            listener2.buttonTapped(event)
+            listener2.buttonTapped(event,position)
         }
 
     }
@@ -59,6 +61,6 @@ class CustomAdapter (
     }
 
     interface DeleteListener{
-        fun buttonTapped(item:DataEvent)
+        fun buttonTapped(item:DataEvent,position: Int)
     }
 }

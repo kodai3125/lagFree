@@ -26,29 +26,29 @@ class ListActivity : AppCompatActivity(),checkFragment.checkFragmentListener {
 
     var id:String=""
     var indicator=0
+    lateinit var adapter:CustomAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-
-        val list=readAll()
 
         indicator=intent.getIntExtra("indicator",0)
 
         val textView=findViewById<TextView>(R.id.textView9)
         val button11=findViewById<Button>(R.id.button11)
 
+        val list=readAll()
+
+
         button11.setOnClickListener{
             val intent=Intent(this, StartActivity::class.java)
             startActivity(intent)
         }
 
-
         if (list.isEmpty()){
             textView.text="保存されたフライトはありません"
         }
-
-        val adapter=CustomAdapter(this,list,object :CustomAdapter.OnItemClickListener{
+        adapter=CustomAdapter(this,list,object :CustomAdapter.OnItemClickListener{
             override fun onItemClick(item: DataEvent) {
                 val intent= Intent(this@ListActivity,ScheduleActivity::class.java)
                 intent.putExtra("id",item.id)
@@ -56,13 +56,19 @@ class ListActivity : AppCompatActivity(),checkFragment.checkFragmentListener {
                 startActivity(intent)
             }
         },object :CustomAdapter.DeleteListener{
-            override fun buttonTapped(item: DataEvent) {
-                val newFragmet=checkFragment()
-                var bundle=Bundle()
-                bundle.putInt("DELETE",2)
-                bundle.putString("ID",item.id)
-                newFragmet.arguments=bundle
-                newFragmet.show(supportFragmentManager,"checkFragment")
+            override fun buttonTapped(item: DataEvent,position:Int) {
+                //val newFragmet=checkFragment()
+                //var bundle=Bundle()
+                //bundle.putInt("DELETE",2)
+                //bundle.putString("ID",item.id)
+                //positionE=position
+                //newFragmet.arguments=bundle
+                //newFragmet.show(supportFragmentManager,"checkFragment")
+                Toast.makeText(this@ListActivity,"${item.title}　が削除されました",Toast.LENGTH_SHORT).show()
+                delete(item.id)
+                if (list.isEmpty()){
+                    textView.text="保存されたフライトはありません"
+                }
 
             }
         },true)
@@ -76,10 +82,10 @@ class ListActivity : AppCompatActivity(),checkFragment.checkFragmentListener {
             newFragmet.show(supportFragmentManager,"checkFragment")
         }
 
-
         val recycelrView=findViewById<RecyclerView>(R.id.recyclerView)
         recycelrView.layoutManager=LinearLayoutManager(this)
         recycelrView.adapter=adapter
+
 
 
         title = "フライト一覧"
@@ -95,14 +101,8 @@ class ListActivity : AppCompatActivity(),checkFragment.checkFragmentListener {
     }
 
     override fun onDataPass(data: String) {
-        delete(data)
+        id=data
 
-        val realm=Realm.getDefaultInstance()
-        val list=realm.where(DataEvent::class.java).equalTo("id",data).findFirst()!!.title
-        Toast.makeText(this,"$list　は削除されました",Toast.LENGTH_SHORT).show()
-        realm.close()
-        val intent=Intent(this,ListActivity::class.java)
-        startActivity(intent)
     }
 
     override fun onDialogPositiveClick(dialog: DialogFragment) {
@@ -115,10 +115,12 @@ class ListActivity : AppCompatActivity(),checkFragment.checkFragmentListener {
     }
 
     override fun onDialogPositiveClick2(dialog: DialogFragment) {
-
-
+        //val realm=Realm.getDefaultInstance()
+        //val list=realm.where(DataEvent::class.java).equalTo("id",id).findFirst()!!.title
+        //Toast.makeText(this,"$list　は削除されました",Toast.LENGTH_SHORT).show()
+        //realm.close()
+        //delete(id)
     }
-
 
     override fun onDialogNegativeClick2(dialog: DialogFragment) {
 

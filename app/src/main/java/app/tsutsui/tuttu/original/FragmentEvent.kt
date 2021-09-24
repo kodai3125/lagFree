@@ -70,7 +70,7 @@ class FragmentEvent:DialogFragment() {
 
         builder.setView(view).setOnDismissListener {
             mListr?.onDissMiss(this)
-        }
+        }.setTitle("アクションを選択してください")
 
         return builder.create()
     }

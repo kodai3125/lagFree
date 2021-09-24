@@ -11,6 +11,8 @@ open class DataEvent(
     open var imageId: Int = 0,
     open var events: RealmList<String> = RealmList(),
     open var createdAt: Date = Date(System.currentTimeMillis()),
-    open var title:String=""
+    open var title:String="",
+    open var flight:RealmList<String> =RealmList(),
+
 
 ): RealmObject()

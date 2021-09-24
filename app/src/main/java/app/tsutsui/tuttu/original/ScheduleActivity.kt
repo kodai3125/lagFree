@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment
 import app.tsutsui.tuttu.original.DataEvent
 import app.tsutsui.tuttu.original.ListActivity
 import app.tsutsui.tuttu.original.SaveFragment
+import app.tsutsui.tuttu.original.flightInfoFragment
 import com.roundtableapps.timelinedayviewlibrary.Event
 import com.roundtableapps.timelinedayviewlibrary.EventView
 import com.roundtableapps.timelinedayviewlibrary.TimeLineLayout
@@ -22,7 +23,7 @@ import org.json.JSONArray
 import java.util.*
 import kotlin.collections.ArrayList
 
-    class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,FragmentEvent.FragmentEventLister,SaveFragment.SaveFragmentListener{
+    class ScheduleActivity() : AppCompatActivity(),EventPicker.EventDialogLister,FragmentEvent.FragmentEventLister,SaveFragment.SaveFragmentListener,flightInfoFragment.flightInfoFragmentListener{
 
     var event=""
     var eventStart=0F
@@ -81,6 +82,7 @@ import kotlin.collections.ArrayList
         val button3=findViewById<Button>(R.id.button3)
         val button5=findViewById<Button>(R.id.button5)
         val button10=findViewById<Button>(R.id.button10)
+        val button13=findViewById<Button>(R.id.button13)
 
 
         val calendar = GregorianCalendar.getInstance()
@@ -144,6 +146,26 @@ import kotlin.collections.ArrayList
             }
 
         }
+
+        button13.setOnClickListener{
+            loadArrayList2("flight")
+
+            val newFragment=flightInfoFragment()
+            val bundle=Bundle()
+
+            for (i in 0 until loadArrayList2("flight").size){
+                val x=i+1
+                bundle.putString("VALUE$x",loadArrayList2("flight")[i])
+            }
+
+            newFragment.arguments=bundle
+
+            newFragment.show(supportFragmentManager,"flightFragment")
+
+
+        }
+
+
 
         val calendar3=GregorianCalendar.getInstance()
         calendar3.set(GregorianCalendar.HOUR_OF_DAY,sleepTimeH)
@@ -245,6 +267,7 @@ import kotlin.collections.ArrayList
                 }
             }
             else if (tag==1){
+                removeList("flight")
                 removeList("from")
 
                 val realm=Realm.getDefaultInstance()
@@ -260,6 +283,15 @@ import kotlin.collections.ArrayList
                 saveList2("title", arrayListOf(readList.findFirst()!!.title))
                 saveList2("id", arrayListOf(id))
 
+                val list= arrayListOf<String>()
+
+
+                for (i in 0 until readList.findFirst()!!.flight.size){
+                    list.add(readList.findFirst()!!.flight[i]!!.toString())
+                }
+
+                saveList2("flight",list)
+
                 setTitle(readList.findFirst()!!.title)
 
                 realm.close()
@@ -268,6 +300,8 @@ import kotlin.collections.ArrayList
 
         }
         else{
+
+            removeList("flight")
 
             setTitle("名称未設定")
 
@@ -287,12 +321,17 @@ import kotlin.collections.ArrayList
 
             }
 
+            saveList2("flight", arrayListOf(year.toString(),month.toString(),day.toString(),hour.toString(),min.toString(),hour2.toString(),min2.toString(),sleepTimeH.toString(),sleepTimeM.toString(),sleepH.toString(),sleepM.toString(),country1,country2))
 
 
         }
 
 
 
+    }
+
+    override fun onDialogPositiveClickI(dialog: DialogFragment) {
+        
     }
 
 
@@ -447,6 +486,14 @@ import kotlin.collections.ArrayList
                 }
                 event.events=tempList
                 event.title=title
+                val list=RealmList<String>()
+                for (i in 0 until loadArrayList2("flight").size){
+                    list.add(loadArrayList2("flight")[i])
+                }
+                event.flight=list
+
+
+
             }
             realm.close()
 
@@ -457,6 +504,7 @@ import kotlin.collections.ArrayList
             removeList("name")
             removeList("id")
             removeList("title")
+            removeList("flight")
 
             if (loadArrayList2("list2").isNotEmpty()){
                 removeList("list2")
@@ -496,6 +544,12 @@ import kotlin.collections.ArrayList
                     }
                     readList?.events=tempList
 
+                    val list=RealmList<String>()
+                    for (i in 0 until loadArrayList2("flight").size){
+                        list.add(loadArrayList2("flight")[i])
+                    }
+                    readList?.flight=list
+
                 }
                 realm.close()
             }
@@ -507,6 +561,7 @@ import kotlin.collections.ArrayList
             removeList("name")
             removeList("id")
             removeList("title")
+            removeList("flight")
 
             if (loadArrayList2("list2").isNotEmpty()){
                 removeList("list2")

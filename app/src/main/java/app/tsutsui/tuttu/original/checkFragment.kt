@@ -11,11 +11,11 @@ import java.lang.ClassCastException
 class checkFragment:DialogFragment() {
 
     interface checkFragmentListener{
+        fun onDataPass(data:String)
         fun onDialogPositiveClick(dialog:DialogFragment)
         fun onDialogNegativeClick(dialog: DialogFragment)
         fun onDialogPositiveClick2(dialog: DialogFragment)
         fun onDialogNegativeClick2(dialog: DialogFragment)
-        fun onDataPass(data:String)
     }
 
     var listener:checkFragmentListener?=null
@@ -36,6 +36,7 @@ class checkFragment:DialogFragment() {
         val type=arguments?.getInt("ADD")
         val type2=arguments?.getInt("DELETE")
         val id=arguments?.getString("ID")
+
 
         if (type==1){
             builder.setView(view)
